@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarbonTrack — Diagnóstico Energético e Ambiental Industrial</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='%23FFFFFF'/%3E%3Ccircle cx='24' cy='24' r='21' fill='none' stroke='%231A7A3A' stroke-width='2.5'/%3E%3Cpath d='M18 31c-1.5-9 3-15 12-17-1 10-4.5 15-12 17z' fill='%231A7A3A'/%3E%3Cpath d='M17 25h6l3-8 4.5 15 3-10 2 5h13' fill='none' stroke='%2322C55E' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='27' r='2.2' fill='%2322C55E'/%3E%3C/svg%3E">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></symbol>
+  <symbol id="i-bar" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M9 9h4.5a2 2 0 1 1 0 4H9v3h4.5a2 2 0 0 0 0-4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M8 6 4 10h16l-4-4"/><path d="M6 10 3 14h18l-3-4"/><path d="M4 14 2 18h20l-2-4"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 21 4s-2 0-3.5 1.5L14 9 5.8 7.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 3.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17H5"/><path d="M3 17v-5a2 2 0 0 1 .6-1.4l2.4-2.4A2 2 0 0 1 7.4 7.8L9.5 5h5l2.1 2.8a2 2 0 0 1 .4 1.2v8"/><path d="M21 17v-3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M20 3v4"/><path d="M22 5h-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="i-chev-u" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+  <symbol id="i-snowflake" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="m20 6-8 4-8-4"/><path d="m4 18 8-4 8 4"/><path d="m2 12 5-3-5-3"/><path d="m22 6-5 3 5 3"/><path d="M9.5 5 12 2l2.5 3"/><path d="M9.5 19 12 22l2.5-3"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></symbol>
+  <symbol id="i-beaker" viewBox="0 0 24 24"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></symbol>
+  <symbol id="i-brick" viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="1"/><path d="M12 8v8"/><path d="M2 12h4"/><path d="M18 12h4"/></symbol>
+  <symbol id="i-factory2" viewBox="0 0 24 24"><path d="M2 20h20V9l-6 4V9l-6 4V4H6v9l-4-2z"/><path d="M6 20v-4M10 20v-4M14 20v-4M18 20v-4"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5a3 3 0 0 0-3 3 3 3 0 0 0-3 3 3 3 0 0 0 0 6 3 3 0 0 0 3 2 3 3 0 0 0 3-1 3 3 0 0 0 3 1 3 3 0 0 0 3-2 3 3 0 0 0 0-6 3 3 0 0 0-3-3 3 3 0 0 0-3-3z"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-chart2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <!-- LOGO CarbonTrack: folha + linha de pulso, inspirada no slide -->
+  <symbol id="logo-ct" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="21" fill="none" stroke="#1A7A3A" stroke-width="2.5"/>
+    <path d="M18 31c-1.5-9 3-15 12-17-1 10-4.5 15-12 17z" fill="#1A7A3A"/>
+    <path d="M17 25h6l3-8 4.5 15 3-10 2 5h13" fill="none" stroke="#22C55E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="44" cy="27" r="2.2" fill="#22C55E"/>
+  </symbol>
+</svg>
+
+<nav class="topbar">
+  <div class="tlogo">
+    <svg width="26" height="26" viewBox="0 0 48 48" style="flex-shrink:0"><use href="#logo-ct"/></svg>
+    Carbon<span style="color:var(--signal)">Track</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="pg-hero" class="pg on">
+  <div class="h-glow glow-a"></div><div class="h-glow glow-b"></div>
+  <div class="hero-inner">
+    <div class="hero-logo-big"><svg width="120" height="120" viewBox="0 0 48 48"><use href="#logo-ct"/></svg></div>
+    <div class="h-kicker"><div class="kicker-dot"></div>Inteligência para a indústria sustentável</div>
+    <h1 class="h-title">Bem-vindo ao<br>Carbon<em>Track</em></h1>
+    <p class="h-tagline">Inteligência para monitorar. Dados para analisar. Ações para transformar.</p>
+    <p class="h-sub">Responda algumas perguntas e receba um <em>pré-diagnóstico</em> de onde sua fábrica desperdiça energia e como reduzir custos e emissões — estimado por IA a partir de dados oficiais.</p>
+    <div class="counter-card">
+      <div class="counter-eyebrow">Toneladas de CO₂ emitidas pela indústria brasileira hoje</div>
+      <div class="counter-num"><b id="live-n">0</b> tCO₂</div>
+      <div class="counter-note">Base: SEEG · indústria brasileira · acumulado desde 00:00 (estimativa)</div>
+    </div>
+    <div class="h-stats">
+      <div class="h-stat"><span class="snum">~40%</span><span class="slbl">da eletricidade<br>é da indústria</span></div>
+      <div class="h-stat"><span class="snum">47%</span><span class="slbl">travam por<br>custo</span></div>
+      <div class="h-stat"><span class="snum">66%</span><span class="slbl">sem acesso à<br>informação</span></div>
+      <div class="h-stat"><span class="snum">R$ 0</span><span class="slbl">custo do<br>pré-diagnóstico</span></div>
+    </div>
+    <div class="mode-row">
+      <div class="mode-opt" onclick="resetarCronometro();showPg('form');iniciarCronometro();">
+        <div class="mo-ico"><svg class="ico" width="20" height="20"><use href="#i-bar"/></svg></div>
+        <div class="mo-title">Modo Guia</div>
+        <div class="mo-desc">Responda perguntas passo a passo. Cálculos com seus dados reais.</div>
+        <div class="mo-badge">Recomendado</div>
+      </div>
+      <div class="mode-opt" onclick="resetarCronometro();showPg('livre');iniciarCronometro();">
+        <div class="mo-ico"><svg class="ico" width="20" height="20"><use href="#i-sparkle"/></svg></div>
+        <div class="mo-title">Modo Livre</div>
+        <div class="mo-desc">Descreva sua situação em texto. A IA extrai os dados e gera o plano.</div>
+      </div>
+    </div>
+    <div class="h-note">Sem cadastro · Sem custo · Pré-diagnóstico em PDF incluído</div>
+    <div class="pillars">
+      <div class="pillar"><svg class="ico" width="22" height="22"><use href="#i-factory2"/></svg><span>Indústria</span></div>
+      <div class="pillar"><svg class="ico" width="22" height="22"><use href="#i-leaf"/></svg><span>Sustentabilidade</span></div>
+      <div class="pillar"><svg class="ico" width="22" height="22"><use href="#i-chart2"/></svg><span>Dados</span></div>
+      <div class="pillar"><svg class="ico" width="22" height="22"><use href="#i-brain"/></svg><span>Inteligência</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div id="pg-form" class="pg">
+  <div class="fw">
+    <div class="ftimer-row"><div class="ftimer" id="form-timer"><svg class="ico" width="13" height="13"><use href="#i-clock"/></svg><span id="form-timer-txt">00:00</span></div></div>
+    <div class="prog">
+      <div class="prog-track"><div class="prog-bar" id="pbar"></div></div>
+      <div class="prog-dot cur" id="pd1">1</div>
+      <div class="prog-dot" id="pd2">2</div>
+      <div class="prog-dot" id="pd3">3</div>
+    </div>
+    <div class="prog-lbls">
+      <span class="prog-lbl cur" id="pl1">Identificação</span>
+      <span class="prog-lbl" id="pl2">Energia</span>
+      <span class="prog-lbl" id="pl3">Contexto</span>
+    </div>
+    <!-- Step 1 -->
+    <div class="fstep on" id="fs1">
+      <div class="card">
+        <div class="card-eye">Passo 1 de 3</div>
+        <div class="card-head">Qual é o segmento da sua indústria?</div>
+        <div class="field">
+          <div class="seg-grid">
+            <div class="seg-btn" data-seg="Alimentícia e Bebidas"     onclick="selSeg(this)"><div class="seg-btn-name">Alimentícia e Bebidas</div><div class="seg-btn-desc">Refrigeração, vapor, pasteurização</div></div>
+            <div class="seg-btn" data-seg="Têxtil e Vestuário"        onclick="selSeg(this)"><div class="seg-btn-name">Têxtil e Vestuário</div><div class="seg-btn-desc">Tingimento, secagem, acabamento</div></div>
+            <div class="seg-btn" data-seg="Metalúrgica e Siderúrgica" onclick="selSeg(this)"><div class="seg-btn-name">Metalúrgica e Siderúrgica</div><div class="seg-btn-desc">Fornos, tratamento térmico, fundição</div></div>
+            <div class="seg-btn" data-seg="Química e Petroquímica"    onclick="selSeg(this)"><div class="seg-btn-name">Química e Petroquímica</div><div class="seg-btn-desc">Reatores, vapor, resfriamento</div></div>
+            <div class="seg-btn" data-seg="Papel e Celulose"          onclick="selSeg(this)"><div class="seg-btn-name">Papel e Celulose</div><div class="seg-btn-desc">Secagem, caldeiras, polpa</div></div>
+            <div class="seg-btn" data-seg="Plásticos e Borracha"      onclick="selSeg(this)"><div class="seg-btn-name">Plásticos e Borracha</div><div class="seg-btn-desc">Injeção, extrusão, resfriamento</div></div>
+            <div class="seg-btn" data-seg="Cerâmica e Vidro"          onclick="selSeg(this)"><div class="seg-btn-name">Cerâmica e Vidro</div><div class="seg-btn-desc">Fornos de queima, temperatura alta</div></div>
+            <div class="seg-btn" data-seg="Madeira e Móveis"          onclick="selSeg(this)"><div class="seg-btn-name">Madeira e Móveis</div><div class="seg-btn-desc">Estufas, ar comprimido, resíduos</div></div>
+            <div class="seg-btn" data-seg="Automobilística"           onclick="selSeg(this)"><div class="seg-btn-name">Automobilística</div><div class="seg-btn-desc">Pintura, prensas, robôs</div></div>
+            <div class="seg-btn" data-seg="Outros"                    onclick="selSeg(this)"><div class="seg-btn-name">Outros segmentos</div><div class="seg-btn-desc">Indústria geral ou não listada</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="company-card" style="display:none">
+        <div class="card-eye">Dados da empresa</div>
+        <div class="field"><label class="flabel">Nome da empresa</label><input class="finput" id="f-emp" type="text" placeholder="Ex: Metalúrgica São Paulo Ltda"></div>
+        <div class="field"><label class="flabel">Responsável <span class="fhint">(opcional)</span></label><input class="finput" id="f-resp" type="text" placeholder="Ex: Maria Santos"></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Porte da empresa</label>
+          <div class="pills" id="pg-porte">
+            <div class="pill" data-g="porte" data-v="Pequena (até 99 funcionários)"   onclick="pill(this)">Pequena — até 99 func.</div>
+            <div class="pill" data-g="porte" data-v="Média (100–499 funcionários)"    onclick="pill(this)">Média — 100 a 499 func.</div>
+            <div class="pill" data-g="porte" data-v="Grande (500+ funcionários)"      onclick="pill(this)">Grande — 500+ func.</div>
+          </div>
+        </div>
+      </div>
+      <div class="fnav">
+        <button class="btn-back ghost"><svg class="ico" width="15" height="15"><use href="#i-arrow-l"/></svg> Voltar</button>
+        <button class="btn-next" onclick="next(1)">Próximo <svg class="ico" width="15" height="15"><use href="#i-arrow-r"/></svg></button>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div class="fstep" id="fs2">
+      <div class="card">
+        <div class="card-eye">Passo 2 de 3</div>
+        <div class="card-head">Consumo energético</div>
+        <div class="field"><label class="flabel">Consumo elétrico mensal <span class="fhint">— verifique na fatura</span></label><div class="ufield"><input type="number" id="f-kwh" placeholder="Ex: 150000" min="0"><div class="ubadge">kWh/mês</div></div></div>
+        <div class="field"><label class="flabel">Valor da conta de energia <span class="fhint">— opcional, melhora a precisão</span></label><div class="ufield"><input type="number" id="f-fat" placeholder="Ex: 95000" min="0"><div class="ubadge">R$/mês</div></div></div>
+        <div class="field">
+          <label class="flabel" style="margin-bottom:8px">Utiliza combustíveis fósseis no processo?</label>
+          <div class="trow" onclick="togComb()"><div><div class="trow-name">Diesel, Gás Natural, GLP ou outros</div><div class="trow-desc">Além do consumo de energia elétrica</div></div><div class="tsw" id="tsw"></div></div>
+        </div>
+        <div id="comb-x" style="display:none">
+          <div class="two">
+            <div class="field"><label class="flabel">Tipo</label><select class="finput" id="f-ct" onchange="updU()"><option value="">Selecione...</option><option value="diesel">Diesel</option><option value="gas_natural">Gás Natural</option><option value="glp">GLP</option><option value="biomassa">Biomassa / Lenha</option></select></div>
+            <div class="field"><label class="flabel">Consumo mensal</label><div class="ufield"><input type="number" id="f-cq" placeholder="0" min="0"><div class="ubadge" id="f-cu">L/mês</div></div></div>
+          </div>
+        </div>
+        <div class="sect-qs-wrap" id="sect-qs"></div>
+      </div>
+      <div class="fnav">
+        <button class="btn-back" onclick="prev(2)"><svg class="ico" width="15" height="15"><use href="#i-arrow-l"/></svg> Voltar</button>
+        <button class="btn-next" onclick="next(2)">Próximo <svg class="ico" width="15" height="15"><use href="#i-arrow-r"/></svg></button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="fstep" id="fs3">
+      <div class="card">
+        <div class="card-eye">Passo 3 de 3</div>
+        <div class="card-head">Contexto da planta</div>
+        <div class="field"><label class="flabel">Área total da fábrica <span class="fhint">— galpões + produção</span></label><div class="ufield"><input type="number" id="f-area" placeholder="Ex: 5000" min="0"><div class="ubadge">m²</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Já realizou auditoria energética?</label><div class="pills" id="pg-aud"><div class="pill" data-g="aud" data-v="sim" onclick="pill(this)">Sim, já realizamos</div><div class="pill" data-g="aud" data-v="nao" onclick="pill(this)">Nunca realizamos</div><div class="pill" data-g="aud" data-v="plan" onclick="pill(this)">Planejando realizar</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Possui geração própria de energia?</label><div class="pills" id="pg-ger"><div class="pill" data-g="ger" data-v="sim" onclick="pill(this)">Sim (solar, eólica...)</div><div class="pill" data-g="ger" data-v="nao" onclick="pill(this)">Não, somente rede pública</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Turnos de funcionamento</label><div class="pills" id="pg-trn"><div class="pill" data-g="trn" data-v="1 turno (8h/dia)" onclick="pill(this)">1 turno — 8h/dia</div><div class="pill" data-g="trn" data-v="2 turnos (16h/dia)" onclick="pill(this)">2 turnos — 16h/dia</div><div class="pill" data-g="trn" data-v="3 turnos (24h/dia)" onclick="pill(this)">3 turnos — 24h/dia</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Idade dos principais equipamentos <span class="fhint">— fornos, motores, caldeira (opcional)</span></label><div class="pills" id="pg-idade"><div class="pill" data-g="idade" data-v="novos (até 5 anos)" onclick="pill(this)">Novos — até 5 anos</div><div class="pill" data-g="idade" data-v="intermediários (5 a 15 anos)" onclick="pill(this)">5 a 15 anos</div><div class="pill" data-g="idade" data-v="antigos (mais de 15 anos)" onclick="pill(this)">Mais de 15 anos</div><div class="pill" data-g="idade" data-v="idades variadas" onclick="pill(this)">Idades variadas</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Onde você percebe mais desperdício? <span class="fhint">— opcional</span></label><div class="pills" id="pg-desp"><div class="pill" data-g="desp" data-v="ar comprimido" onclick="pill(this)">Ar comprimido</div><div class="pill" data-g="desp" data-v="motores e bombas" onclick="pill(this)">Motores e bombas</div><div class="pill" data-g="desp" data-v="calor / vapor / fornos" onclick="pill(this)">Calor, vapor ou fornos</div><div class="pill" data-g="desp" data-v="refrigeração" onclick="pill(this)">Refrigeração</div><div class="pill" data-g="desp" data-v="iluminação" onclick="pill(this)">Iluminação</div><div class="pill" data-g="desp" data-v="não sei ao certo" onclick="pill(this)">Não sei ao certo</div></div></div>
+        <div class="field"><label class="flabel" style="margin-bottom:8px">Orçamento disponível para investimento <span class="fhint">— opcional</span></label>
+          <div class="pills" id="pg-budget">
+            <div class="pill" data-g="budget" data-v="até R$ 20 mil"       onclick="pill(this)">Até R$ 20 mil</div>
+            <div class="pill" data-g="budget" data-v="R$ 20–50 mil"        onclick="pill(this)">R$ 20–50 mil</div>
+            <div class="pill" data-g="budget" data-v="R$ 50–100 mil"       onclick="pill(this)">R$ 50–100 mil</div>
+            <div class="pill" data-g="budget" data-v="R$ 100–300 mil"      onclick="pill(this)">R$ 100–300 mil</div>
+            <div class="pill" data-g="budget" data-v="acima de R$ 300 mil" onclick="pill(this)">Acima de R$ 300 mil</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--light);margin-top:6px">As recomendações serão priorizadas dentro deste limite.</div>
+        </div>
+        <div class="field">
+          <label class="flabel">Informações adicionais <span class="fhint">— opcional</span></label>
+          <textarea class="finput" id="f-obs" rows="3" placeholder="Ex: temos um forno de 20 anos que consome muito gás e queremos priorizar sua substituição. Meta da diretoria é reduzir 20% das emissões até 2026." style="resize:vertical;min-height:80px;line-height:1.55"></textarea>
+          <div style="font-size:.7rem;color:var(--light);margin-top:5px">Problemas específicos, metas da empresa, equipamentos críticos — a IA vai considerar isso nas recomendações.</div>
+        </div>
+      </div>
+      <div class="fnav">
+        <button class="btn-back" onclick="prev(3)"><svg class="ico" width="15" height="15"><use href="#i-arrow-l"/></svg> Voltar</button>
+        <button class="btn-gen" onclick="gerar()"><svg class="ico" width="16" height="16"><use href="#i-sparkle"/></svg>Gerar Plano de Melhorias</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODO LIVRE -->
+<div id="pg-livre" class="pg">
+  <div class="livre-wrap">
+    <div class="ftimer-row"><div class="ftimer" id="livre-timer"><svg class="ico" width="13" height="13"><use href="#i-clock"/></svg><span id="livre-timer-txt">00:00</span></div></div>
+    <div class="livre-hd">
+      <div class="livre-badge">Modo Livre</div>
+      <div class="livre-title">Conte a situação da sua indústria</div>
+      <div class="livre-sub">Descreva seus equipamentos, problemas e orçamento com suas próprias palavras. A IA extrai os dados e gera um plano de melhorias personalizado.</div>
+    </div>
+    <div class="livre-card">
+      <label>Descreva sua situação</label>
+      <textarea id="f-livre" placeholder="Exemplo: Sou a Frango &amp; Cia, fábrica de alimentos. Minha câmara fria tem mais de 20 anos, o compressor de amônia vive quebrando e a caldeira a gás perdeu eficiência — caiu de 86% para 78%. A conta de energia vem R$138 mil/mês. Os supermercados estão cobrando plano de carbono. Tenho R$200 mil para investir este ano."></textarea>
+      <div class="livre-hints">
+        <span class="lhint">tipo de indústria</span>
+        <span class="lhint">equipamentos e problemas</span>
+        <span class="lhint">conta de energia</span>
+        <span class="lhint">orçamento disponível</span>
+        <span class="lhint">metas de redução</span>
+      </div>
+    </div>
+    <div class="livre-nav">
+      <button class="btn-back-livre" onclick="pararCronometro();showPg('hero')">
+        <svg class="ico" width="15" height="15"><use href="#i-arrow-l"/></svg> Voltar
+      </button>
+      <button class="btn-gen-livre" onclick="gerarLivre()">
+        <svg class="ico" width="16" height="16"><use href="#i-sparkle"/></svg>
+        Gerar Plano com IA
+      </button>
+    </div>
+    <div class="livre-note">
+      No Modo Livre, a IA <strong>extrai os dados</strong> do seu texto e o <strong>sistema calcula</strong> as emissões com os mesmos fatores oficiais do Modo Guia.
+      Quando algum dado não é informado, usamos médias setoriais (EPE, SEEG) como referência.
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="pg-load" class="pg">
+  <div class="load-wrap">
+    <div class="spinner"><div class="sr"></div><div class="sr sr2"></div></div>
+    <div class="load-title">Gerando seu plano...</div>
+    <div class="load-sub">A IA está analisando os dados do setor</div>
+    <ul class="load-list">
+      <li class="li" id="ls1"><div class="li-ico" id="li1"><svg class="ico" width="11" height="11"><use href="#i-clock"/></svg></div><span class="li-txt">Processando dados da empresa</span></li>
+      <li class="li" id="ls2"><div class="li-ico" id="li2"><svg class="ico" width="11" height="11"><use href="#i-clock"/></svg></div><span class="li-txt">Calculando emissões de CO₂</span></li>
+      <li class="li" id="ls3"><div class="li-ico" id="li3"><svg class="ico" width="11" height="11"><use href="#i-clock"/></svg></div><span class="li-txt">Consultando especialista em <span id="li3-seg">sustentabilidade</span></span></li>
+      <li class="li" id="ls4"><div class="li-ico" id="li4"><svg class="ico" width="11" height="11"><use href="#i-clock"/></svg></div><span class="li-txt">Elaborando plano de melhorias</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="pg-res" class="pg">
+  <div class="rw">
+    <div class="res-hd">
+      <div class="res-chip" id="r-chip"><svg class="ico" width="11" height="11"><use href="#i-check"/></svg> Plano concluído</div>
+      <div class="res-title" id="r-title">Plano de Melhorias</div>
+      <div class="res-meta" id="r-meta"></div>
+    </div>
+
+    <!-- QUALIDADE DO DIAGNÓSTICO -->
+    <div class="quality" id="quality-panel">
+      <div class="quality-top">
+        <div class="quality-label">
+          <span class="quality-badge" id="q-badge">Pré-diagnóstico inicial</span>
+          Qualidade do diagnóstico
+        </div>
+        <div class="quality-pct" id="q-pct">—</div>
+      </div>
+      <div class="quality-track"><div class="quality-fill" id="q-fill"></div></div>
+      <div class="quality-msg" id="q-msg">Quanto mais informações você fornecer, mais preciso será o pré-diagnóstico.</div>
+      <button class="quality-btn" id="q-btn" onclick="adicionarDados()">
+        <svg class="ico" width="15" height="15"><use href="#i-plus"/></svg>
+        Adicionar mais dados
+      </button>
+      <div class="quality-foot">Este indicador representa a quantidade e a qualidade dos dados fornecidos — não substitui uma auditoria energética profissional.</div>
+    </div>
+
+    <!-- DOIS RESULTADOS -->
+    <div class="dual">
+      <div class="dual-half money">
+        <div class="dual-eyebrow"><svg class="ico" width="13" height="13"><use href="#i-coin"/></svg>Para o seu bolso</div>
+        <div class="dual-val" id="d-money">—</div>
+        <div class="dual-unit">de economia potencial na conta de energia por ano</div>
+      </div>
+      <div class="dual-half carbon">
+        <div class="dual-eyebrow"><svg class="ico" width="13" height="13"><use href="#i-globe"/></svg>Para o meio ambiente</div>
+        <div class="dual-val" id="d-carbon">—</div>
+        <div class="dual-unit">de CO₂ que deixam de ser emitidas por ano</div>
+      </div>
+    </div>
+    <div class="dual-note">Estes são os potenciais totais. As recomendações abaixo priorizam o que cabe no seu orçamento.</div>
+
+    <!-- STAT STRIP -->
+    <div class="statstrip">
+      <div class="ss-item"><div class="ss-val" id="r-co2">—</div><div class="ss-lbl">tCO₂/ano emitidas hoje</div></div>
+      <div class="ss-sep"></div>
+      <div class="ss-item"><div class="ss-val" id="r-eco">—</div><div class="ss-lbl">economia potencial/ano</div></div>
+      <div class="ss-sep"></div>
+      <div class="ss-item"><div class="ss-val" id="r-cred">—</div><div class="ss-lbl">potencial futuro em créditos*</div></div>
+      <div class="ss-sep"></div>
+      <div class="ss-item"><div class="ss-val" id="r-tempo">—</div><div class="ss-lbl" id="r-tempo-lbl">tempo até o resultado</div></div>
+    </div>
+    <div class="ss-foot">*Valor de referência caso a redução de CO₂ seja convertida em créditos de carbono no futuro, conforme metodologia e critérios aplicáveis. Não é um valor garantido.</div>
+
+    <!-- EQUIVALENCIAS -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-globe"/></svg>O que essa emissão representa</div>
+      <div class="equiv-grid" id="eq-grid">
+        <!-- populated dynamically by renderRes() -->
+      </div>
+    </div>
+
+    <!-- PLAN DE MELHORIAS - main section -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-wrench"/></svg>Situação atual</div>
+      <div class="situacao-txt" id="r-situacao">Carregando análise...</div>
+    </div>
+
+    <div style="margin-bottom:8px;padding:0 2px">
+      <div class="plan-title">Plano de Melhorias</div>
+      <div class="plan-sub">Recomendações ordenadas por menor prazo de retorno</div>
+    </div>
+    <div class="rec-list" id="rec-list">
+      <div style="background:var(--white);border-radius:16px;padding:32px;text-align:center;color:var(--light);font-size:.85rem;border:1px solid var(--border)">Carregando recomendações...</div>
+    </div>
+
+    <div class="retorno-box" style="margin-bottom:14px">
+      <div class="retorno-label">Retorno financeiro estimado</div>
+      <div class="retorno-txt" id="r-retorno">Carregando...</div>
+    </div>
+
+    <!-- BENCHMARK -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-bar"/></svg>Comparativo setorial</div>
+      <div class="bench-wrap">
+        <div id="bench-status"></div>
+        <div class="bench-bars">
+          <div class="brow2"><div class="brow2-lbl">Sua empresa</div><div class="btrack2"><div class="bfill2 co" id="bb-co" style="width:0"></div></div><div class="brow2-val" id="bb-co-val">—</div></div>
+          <div class="brow2"><div class="brow2-lbl">Média do setor</div><div class="btrack2"><div class="bfill2 ref" id="bb-ref" style="width:0"></div></div><div class="brow2-val" id="bb-ref-val">—</div></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--light);margin-top:10px;overflow-wrap:break-word;word-break:break-word" id="bench-note"></div>
+      </div>
+    </div>
+
+    <!-- POTENTIAL BARS -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-trend"/></svg>Potencial de redução por área</div>
+      <div class="pbars">
+        <div><div class="pr-labels"><span class="pr-name">Eficiência Energética</span><span class="pr-pct" id="p1">0%</span></div><div class="ptrack"><div class="pfill g" id="b1"></div></div></div>
+        <div><div class="pr-labels"><span class="pr-name">Otimização de Processos</span><span class="pr-pct" id="p2">0%</span></div><div class="ptrack"><div class="pfill b" id="b2"></div></div></div>
+        <div><div class="pr-labels"><span class="pr-name">Energia Renovável</span><span class="pr-pct" id="p3">0%</span></div><div class="ptrack"><div class="pfill a" id="b3"></div></div></div>
+      </div>
+    </div>
+
+    <!-- IMPACT -->
+    <div class="impact-panel">
+      <div class="impact-eye">Impacto em escala — Conexões para o Amanhã</div>
+      <div class="impact-q">Se 10% das médias indústrias brasileiras implementassem melhorias no mesmo potencial identificado aqui...</div>
+      <div class="impact-num" id="imp-num">—</div>
+      <div class="impact-unit">toneladas de CO₂ evitadas por ano no Brasil</div>
+      <div class="impact-note">Base: ~55.000 médias indústrias no Brasil (IBGE 2021) · 10% = 5.500 empresas · Fontes: IBGE, SEBRAE, SEEG</div>
+    </div>
+
+    <!-- ODS -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-target"/></svg>Objetivos de Desenvolvimento Sustentável atendidos</div>
+      <div class="ods-row">
+        <div class="ods-card ods7"><div class="ods-num">7</div><div class="ods-title">Energia Acessível e Limpa</div><div class="ods-rel">Redução do consumo e eficiência energética industrial</div></div>
+        <div class="ods-card ods9"><div class="ods-num">9</div><div class="ods-title">Indústria, Inovação e Infraestrutura</div><div class="ods-rel">IA aplicada à modernização da indústria brasileira</div></div>
+        <div class="ods-card ods13"><div class="ods-num">13</div><div class="ods-title">Ação Contra a Mudança do Clima</div><div class="ods-rel">Diagnóstico e redução de emissões de CO₂ industrial</div></div>
+      </div>
+    </div>
+
+    <!-- BEFORE/AFTER - compact, secondary -->
+    <div class="block">
+      <div class="sec-eye"><svg class="ico" width="13" height="13"><use href="#i-zap"/></svg>Acesso ao diagnóstico — antes e agora</div>
+      <div class="ba-compact">
+        <div class="bac before">
+          <div class="bac-head"><svg class="ico" width="12" height="12"><use href="#i-clock"/></svg>Consultoria tradicional</div>
+          <div class="bac-item"><span class="bac-k">Custo</span><span class="bac-v">R$ 2,5–15 mil+</span></div>
+          <div class="bac-item"><span class="bac-k">Tempo</span><span class="bac-v">semanas</span></div>
+          <div class="bac-item"><span class="bac-k">Acesso</span><span class="bac-v">exige contratação</span></div>
+        </div>
+        <div class="bac after">
+          <div class="bac-head"><svg class="ico" width="12" height="12"><use href="#i-sparkle"/></svg>CarbonTrack</div>
+          <div class="bac-item"><span class="bac-k">Custo</span><span class="bac-v">R$ 0</span></div>
+          <div class="bac-item"><span class="bac-k">Tempo</span><span class="bac-v">3 minutos</span></div>
+          <div class="bac-item"><span class="bac-k">Acesso</span><span class="bac-v">Qualquer indústria</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- METHODOLOGY -->
+    <div class="block">
+      <div class="method-toggle" onclick="togMethod()">
+        <div class="method-toggle-lbl"><svg class="ico" width="14" height="14"><use href="#i-info"/></svg>Metodologia e fontes</div>
+        <svg class="ico" width="16" height="16" id="meth-chev"><use href="#i-chev-d"/></svg>
+      </div>
+      <div class="method-body" id="meth-body">
+        <div class="src-explain">
+          <div class="src-item"><strong>IPCC</strong> — Painel Intergovernamental sobre Mudanças Climáticas, da ONU. É a principal referência científica mundial sobre clima e emissões.</div>
+          <div class="src-item"><strong>MCTI</strong> — Ministério da Ciência, Tecnologia e Inovações. Publica os fatores oficiais de emissão da rede elétrica brasileira.</div>
+          <div class="src-item"><strong>EPE / SEEG</strong> — Empresa de Pesquisa Energética e Sistema de Estimativas de Emissões. Fornecem os dados de consumo e as médias por setor.</div>
+          <div class="src-item"><strong>Crédito de carbono</strong> — valor de mercado pago por tonelada de CO₂ evitada. Empresas que reduzem emissões podem gerar créditos e vendê-los; usamos uma média de referência para estimar esse potencial.</div>
+        </div>
+        <div class="method-scroll">
+        <table class="method-table">
+          <tr><th>Fator</th><th>Valor</th><th>Fonte</th></tr>
+          <tr><td>Energia elétrica (rede brasileira)</td><td>0,0843 kgCO₂/kWh</td><td>MCTI 2022</td></tr>
+          <tr><td>Diesel</td><td>2,676 kgCO₂/L</td><td>IPCC / MCTI</td></tr>
+          <tr><td>Gás Natural</td><td>2,04 kgCO₂/m³</td><td>IPCC / MCTI</td></tr>
+          <tr><td>GLP</td><td>1,50 kgCO₂/L</td><td>IPCC / MCTI</td></tr>
+          <tr><td>Biomassa (lenha)</td><td>0,20 kgCO₂/kg</td><td>IPCC</td></tr>
+          <tr><td>Crédito de carbono</td><td>R$ 75/tCO₂ (média)</td><td>Mercado voluntário 2024</td></tr>
+          <tr><td>Voo SP–NYC (ida e volta)</td><td>1,8 tCO₂/passageiro</td><td>ICAO Carbon Calculator</td></tr>
+          <tr><td>Carro médio / ano</td><td>2,0 tCO₂/ano</td><td>CETESB / SEEG</td></tr>
+          <tr><td>Absorção por árvore</td><td>0,022 tCO₂/árvore/ano</td><td>FAO / SFB</td></tr>
+          <tr><td>Benchmarks setoriais</td><td>Médias para 100–499 funcionários</td><td>EPE BEN 2022 / SEEG 2022</td></tr>
+        </table>
+        </div>
+        <div style="font-size:.7rem;color:var(--light);margin-top:10px">Os benchmarks e várias estimativas partem de hipóteses e dados agregados. Os valores reais de cada empresa variam conforme processo, tecnologia, idade dos equipamentos e localização — por isso o resultado é indicativo.</div>
+      </div>
+    </div>
+
+    <div class="disclaim">
+      <svg class="ico" width="15" height="15"><use href="#i-warn"/></svg>
+      <span><strong>Este é um pré-diagnóstico, não uma auditoria.</strong> Os resultados são estimativas baseadas em um conjunto reduzido de perguntas e em hipóteses e médias setoriais — servem para indicar oportunidades e por onde começar, não para dimensionar projetos. Uma auditoria energética completa, feita por especialistas com medição em campo, é o passo seguinte. Fontes dos fatores: MCTI (Ministério da Ciência, Tecnologia e Inovações), IPCC, EPE e SEEG.</span>
+    </div>
+
+    <div class="actrow">
+      <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()"><svg class="ico" width="15" height="15"><use href="#i-down"/></svg>Baixar Plano em PDF</button>
+      <button class="btn-new" onclick="reiniciar()"><svg class="ico" width="14" height="14"><use href="#i-refresh"/></svg>Novo Diagnóstico</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
